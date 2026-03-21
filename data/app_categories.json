@@ -1,0 +1,22 @@
+{
+    "productive_apps": [
+        "code.exe",
+        "pycharm.exe",
+        "notepad++.exe",
+        "explorer.exe"
+    ],
+    "productive_keywords": [
+        "github",
+        "stack overflow",
+        "documentation",
+        "leetcode"
+    ],
+    "distraction_keywords": [
+        "youtube",
+        "netflix",
+        "instagram",
+        "facebook",
+        "reels",
+        "game"
+    ]
+}

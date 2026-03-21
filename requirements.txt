@@ -1,0 +1,5 @@
+customtkinter
+matplotlib
+pywin32
+pandas
+psutil
