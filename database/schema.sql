@@ -14,6 +14,7 @@ CREATE TABLE IF NOT EXISTS events (
     start_time TEXT,
     end_time TEXT,
     location TEXT,
+    status TEXT DEFAULT 'pending',
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
@@ -23,4 +24,9 @@ CREATE TABLE IF NOT EXISTS logs (
     window_title TEXT,
     app_name TEXT,
     is_productive INTEGER
+);
+
+CREATE TABLE IF NOT EXISTS completed_entities (
+    title TEXT PRIMARY KEY,
+    completed_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );

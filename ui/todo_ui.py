@@ -25,22 +25,30 @@ class TodoFrame(ctk.CTkFrame):
         for widget in self.scrollable_frame.winfo_children():
             widget.destroy()
             
-        tasks = fetch_all("SELECT id, title, deadline, status FROM tasks ORDER BY created_at DESC")
+        tasks = fetch_all("SELECT id, title, deadline, status FROM tasks WHERE status != 'completed' ORDER BY created_at DESC")
         for task_id, title, deadline, status in tasks:
             frame = ctk.CTkFrame(self.scrollable_frame, fg_color="#252525", corner_radius=8)
             frame.pack(fill="x", padx=10, pady=5)
             
             var = ctk.BooleanVar(value=(status == 'completed'))
             cb = ctk.CTkCheckBox(frame, text=f"{title} (Due: {deadline})", variable=var, text_color="white", border_width=2, corner_radius=5,
-                                 command=lambda i=task_id, v=var: self.toggle_task(i, v))
+                                 command=lambda i=task_id, v=var, t=title: self.toggle_task(i, v, t))
             cb.pack(side="left", padx=10, pady=5)
             
             btn_del = ctk.CTkButton(frame, text="X", width=30, fg_color="red", command=lambda i=task_id: self.delete_task(i))
             btn_del.pack(side="right", padx=10, pady=5)
 
-    def toggle_task(self, task_id, var):
-        new_status = 'completed' if var.get() else 'pending'
-        execute_query("UPDATE tasks SET status = ? WHERE id = ?", (new_status, task_id))
+    def toggle_task(self, task_id, var, title):
+        status = 'completed' if var.get() else 'pending'
+        execute_query("UPDATE tasks SET status = ? WHERE id = ?", (status, task_id))
+        execute_query("UPDATE events SET status = ? WHERE title = ?", (status, title))
+        
+        if status == 'completed':
+            execute_query("INSERT OR IGNORE INTO completed_entities (title) VALUES (?)", (title,))
+        else:
+            execute_query("DELETE FROM completed_entities WHERE title = ?", (title,))
+        
+        self.refresh()
 
     def delete_task(self, task_id):
         execute_query("DELETE FROM tasks WHERE id = ?", (task_id,))

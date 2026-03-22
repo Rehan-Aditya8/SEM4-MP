@@ -40,7 +40,7 @@ class FocusDeskApp(ctk.CTk):
         # Show selected frame
         if name == "dashboard":
             self.dashboard_frame.grid(row=0, column=0, sticky="nsew")
-            self.dashboard_frame.update_switch_state()
+            self.dashboard_frame.update_focus_button_state()
         else:
             self.dashboard_frame.grid_forget()
             

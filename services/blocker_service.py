@@ -1,5 +1,6 @@
 import os
 import json
+import ctypes
 
 # ===== CONSTANTS =====
 HOSTS_PATH = r"C:\Windows\System32\drivers\etc\hosts"
@@ -9,6 +10,14 @@ START_MARKER = "# === BLOCKER START ==="
 END_MARKER = "# === BLOCKER END ==="
 
 DATA_PATH = os.path.join(os.path.dirname(__file__), "..", "data", "blocked_sites.json")
+
+
+# ===== HELPERS =====
+def is_admin():
+    try:
+        return ctypes.windll.shell32.IsUserAnAdmin() != 0
+    except:
+        return False
 
 
 # ===== LOAD SITES =====

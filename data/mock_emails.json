@@ -1,10 +1,56 @@
 [
     {
-        "subject": "Assignment Deadline Tomorrow",
-        "body": "Submit by 20 March 11:59 PM"
+        "subject": "Project Submission Today",
+        "body": "This is urgent. Submit your final project report immediately. Deadline today 11:59 PM.",
+        "date": "2026-03-23",
+        "time": "23:59"
     },
     {
-        "subject": "Team Meeting",
-        "body": "Meeting at 5 PM today"
+        "subject": "Client Issue - Critical Fix Required",
+        "body": "Important issue reported by client. Please resolve ASAP. This is a critical task.",
+        "date": "2026-03-23",
+        "time": "18:00"
+    },
+    {
+        "subject": "Exam Form Last Date",
+        "body": "Reminder: submit exam form now. Deadline today. This is very important and urgent.",
+        "date": "2026-03-23",
+        "time": "20:00"
+    },
+    {
+        "subject": "Team Meeting Tomorrow",
+        "body": "Reminder: meeting scheduled tomorrow at 10 AM. Please be prepared with updates.",
+        "date": "2026-03-24",
+        "time": "10:00"
+    },
+    {
+        "subject": "Assignment Due This Week",
+        "body": "Your assignment is due soon. Submission deadline is this week. Plan accordingly.",
+        "date": "2026-03-26",
+        "time": "17:00"
+    },
+    {
+        "subject": "Workshop Next Week",
+        "body": "A workshop is scheduled next Monday. This is a reminder to register before it fills.",
+        "date": "2026-03-30",
+        "time": "11:00"
+    },
+    {
+        "subject": "Design Feedback",
+        "body": "This is not urgent. Review the design whenever convenient. No rush, just for review.",
+        "date": "2026-03-28",
+        "time": "15:00"
+    },
+    {
+        "subject": "Optional Webinar",
+        "body": "FYI: optional webinar available. Low priority, attend later if interested.",
+        "date": "2026-03-29",
+        "time": "19:00"
+    },
+    {
+        "subject": "Reference Material",
+        "body": "Sharing documents for review. No rush, check whenever free. This is low priority.",
+        "date": "2026-03-31",
+        "time": "12:00"
     }
 ]

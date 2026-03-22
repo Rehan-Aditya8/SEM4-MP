@@ -1,5 +1,5 @@
 import customtkinter as ctk
-from database.db import fetch_all
+from database.db import fetch_all, execute_query
 from datetime import datetime
 import calendar
 
@@ -13,6 +13,7 @@ class CalendarFrame(ctk.CTkFrame):
         self.current_date = datetime.now()
         self.view_month = self.current_date.month
         self.view_year = self.current_date.year
+        self.selected_date = self.current_date.day # Default to today
 
         # Header
         self.header = ctk.CTkFrame(self, fg_color="transparent", height=60)
@@ -24,35 +25,35 @@ class CalendarFrame(ctk.CTkFrame):
         self.back_btn.pack(side="left", padx=15)
         
         self.header_label = ctk.CTkLabel(self.header, text=f"Calendar - {self.current_date.strftime('%B %Y')}", 
-                                         font=ctk.CTkFont(size=18, weight="bold"))
+                                         font=ctk.CTkFont(size=22, weight="bold"), text_color="white")
         self.header_label.pack(side="left", padx=20)
 
         # Left Column - Event Details
         self.event_col = ctk.CTkFrame(self, fg_color="transparent")
         self.event_col.grid(row=1, column=0, padx=10, pady=10, sticky="nsew")
         
-        self.upcoming_box = ctk.CTkFrame(self.event_col, fg_color="#34495e", corner_radius=10)
+        self.upcoming_box = ctk.CTkFrame(self.event_col, fg_color="#1e1e1e", corner_radius=15, border_width=1, border_color="#333333")
         self.upcoming_box.pack(fill="both", expand=True, pady=(0, 10))
-        ctk.CTkLabel(self.upcoming_box, text="UPCOMING EVENTS", font=ctk.CTkFont(size=14, weight="bold")).pack(pady=10)
+        ctk.CTkLabel(self.upcoming_box, text="UPCOMING EVENTS", font=ctk.CTkFont(size=14, weight="bold"), text_color="#3498db").pack(pady=15)
         
         self.event_scroll = ctk.CTkScrollableFrame(self.upcoming_box, fg_color="transparent")
         self.event_scroll.pack(fill="both", expand=True, padx=5, pady=5)
 
         # Middle Column - Main Calendar
-        self.cal_main_frame = ctk.CTkFrame(self, fg_color="#34495e", corner_radius=10)
+        self.cal_main_frame = ctk.CTkFrame(self, fg_color="#1e1e1e", corner_radius=15, border_width=1, border_color="#333333")
         self.cal_main_frame.grid(row=1, column=1, padx=10, pady=10, sticky="nsew")
         
         # Month Navigation
         self.nav_frame = ctk.CTkFrame(self.cal_main_frame, fg_color="transparent")
         self.nav_frame.pack(fill="x", pady=10)
         
-        self.prev_btn = ctk.CTkButton(self.nav_frame, text="<", width=30, command=self.prev_month)
+        self.prev_btn = ctk.CTkButton(self.nav_frame, text="<", width=40, height=40, fg_color="#333333", hover_color="#444444", corner_radius=20, command=self.prev_month)
         self.prev_btn.pack(side="left", padx=50)
         
-        self.month_year_label = ctk.CTkLabel(self.nav_frame, text="", font=ctk.CTkFont(size=20, weight="bold"))
+        self.month_year_label = ctk.CTkLabel(self.nav_frame, text="", font=ctk.CTkFont(size=22, weight="bold"), text_color="white")
         self.month_year_label.pack(side="left", expand=True)
         
-        self.next_btn = ctk.CTkButton(self.nav_frame, text=">", width=30, command=self.next_month)
+        self.next_btn = ctk.CTkButton(self.nav_frame, text=">", width=40, height=40, fg_color="#333333", hover_color="#444444", corner_radius=20, command=self.next_month)
         self.next_btn.pack(side="right", padx=50)
         
         self.days_grid = ctk.CTkFrame(self.cal_main_frame, fg_color="transparent")
@@ -94,38 +95,80 @@ class CalendarFrame(ctk.CTkFrame):
                         self.view_month == self.current_date.month and 
                         self.view_year == self.current_date.year)
             
+            is_selected = (day == self.selected_date)
             has_event = day in event_days
             
-            bg_color = "#3498db" if is_today else "#2c3e50"
-            border_color = "#f39c12" if has_event else bg_color
-            border_width = 2 if has_event else 0
+            # Base colors
+            if is_today:
+                fg_color = "#3498db" 
+                hover_color = "#2980b9"
+                text_color = "white"
+            elif is_selected:
+                fg_color = "#2c3e50"
+                hover_color = "#34495e"
+                text_color = "#3498db"
+            else:
+                fg_color = "transparent"
+                hover_color = "#2c3e50"
+                text_color = "white"
+
+            # Create day button container for the dot
+            day_btn = ctk.CTkButton(self.days_grid, text=str(day), width=60, height=60, 
+                                fg_color=fg_color, hover_color=hover_color,
+                                text_color=text_color,
+                                border_width=2 if is_selected else 0,
+                                border_color="#3498db" if is_selected else "#2c3e50",
+                                font=ctk.CTkFont(size=14, weight="bold" if (is_today or is_selected) else "normal"),
+                                command=lambda d=day: self.select_day(d))
+            day_btn.grid(row=row, column=col, padx=5, pady=5)
             
-            btn = ctk.CTkButton(self.days_grid, text=str(day), width=50, height=50, 
-                                fg_color=bg_color, border_width=border_width, border_color=border_color,
-                                font=ctk.CTkFont(size=12, weight="bold" if is_today else "normal"),
-                                command=lambda d=day: self.show_day_events(d))
-            btn.grid(row=row, column=col, padx=3, pady=3)
+            # Add event indicator dot if needed
+            if has_event:
+                dot = ctk.CTkLabel(day_btn, text="•", font=ctk.CTkFont(size=20), text_color="#f39c12", fg_color="transparent")
+                dot.place(relx=0.5, rely=0.8, anchor="center")
             
             col += 1
             if col > 6:
                 col = 0
                 row += 1
 
+    def select_day(self, day):
+        self.selected_date = day
+        self.draw_calendar()
+        self.show_day_events(day)
+
     def load_upcoming_events(self):
+        self.render_events("SELECT title, start_time FROM events WHERE status != 'completed' AND start_time >= date('now') ORDER BY start_time LIMIT 10")
+
+    def render_events(self, query, params=()):
         for widget in self.event_scroll.winfo_children():
             widget.destroy()
             
-        events = fetch_all("SELECT title, start_time FROM events WHERE start_time >= date('now') ORDER BY start_time LIMIT 10")
+        events = fetch_all(query, params)
         if not events:
             ctk.CTkLabel(self.event_scroll, text="No upcoming events", font=ctk.CTkFont(size=11, slant="italic")).pack(pady=10)
             return
 
         for title, start_time in events:
-            e_frame = ctk.CTkFrame(self.event_scroll, fg_color="#2c3e50", corner_radius=5)
-            e_frame.pack(fill="x", pady=2)
+            e_frame = ctk.CTkFrame(self.event_scroll, fg_color="#1a1a1a", corner_radius=8, border_width=1, border_color="#333333")
+            e_frame.pack(fill="x", pady=4, padx=5)
             
-            ctk.CTkLabel(e_frame, text=title, font=ctk.CTkFont(size=11, weight="bold"), anchor="w").pack(fill="x", padx=10, pady=(5, 0))
-            ctk.CTkLabel(e_frame, text=start_time, font=ctk.CTkFont(size=9), text_color="gray", anchor="w").pack(fill="x", padx=10, pady=(0, 5))
+            info_frame = ctk.CTkFrame(e_frame, fg_color="transparent")
+            info_frame.pack(side="left", fill="both", expand=True, padx=12, pady=8)
+            
+            ctk.CTkLabel(info_frame, text=title, font=ctk.CTkFont(size=12, weight="bold"), text_color="white", anchor="w").pack(fill="x")
+            ctk.CTkLabel(info_frame, text=start_time, font=ctk.CTkFont(size=10), text_color="#aaaaaa", anchor="w").pack(fill="x")
+            
+            btn_done = ctk.CTkButton(e_frame, text="✓", width=30, height=30, fg_color="transparent", 
+                                     hover_color="#27ae60", text_color="#2ecc71", 
+                                     command=lambda t=title: self.complete_event(t))
+            btn_done.pack(side="right", padx=5)
+
+    def complete_event(self, title):
+        execute_query("UPDATE events SET status = 'completed' WHERE title = ?", (title,))
+        execute_query("INSERT OR IGNORE INTO completed_entities (title) VALUES (?)", (title,))
+        execute_query("UPDATE tasks SET status = 'completed' WHERE title = ?", (title,))
+        self.refresh()
 
     def prev_month(self):
         self.view_month -= 1
@@ -142,8 +185,13 @@ class CalendarFrame(ctk.CTkFrame):
         self.draw_calendar()
 
     def show_day_events(self, day):
-        # Placeholder for showing specific day events in the sidebar
-        pass
+        # Format: YYYY-MM-DD
+        date_str = f"{self.view_year}-{self.view_month:02d}-{day:02d}"
+        self.render_events("SELECT title, start_time FROM events WHERE start_time LIKE ? ORDER BY start_time", (f"{date_str}%",))
+        
+        # Override header text for clarity
+        ctk.CTkLabel(self.upcoming_box, text=f"EVENTS FOR {day} {calendar.month_name[self.view_month]}", 
+                    font=ctk.CTkFont(size=12)).pack(pady=5, before=self.event_scroll)
 
     def refresh(self):
         self.draw_calendar()

@@ -34,3 +34,23 @@ class EmailParser:
             'deadline': f"{deadline} {time}".strip(),
             'title': email.get('subject', 'No Title')
         }
+
+    @staticmethod
+    def get_urgency(email):
+        subject = email.get('subject', '').lower()
+        body = email.get('body', '').lower()
+        content = f"{subject} {body}"
+        
+        # Priority order: Urgent > Upcoming > Later
+        urgent_kws = ["urgent", "asap", "important", "immediately", "deadline today", "submit now", "critical"]
+        upcoming_kws = ["tomorrow", "next", "scheduled", "meeting", "due soon", "this week", "reminder"]
+        later_kws = ["whenever", "no rush", "later", "optional", "for review", "fyi", "low priority"]
+        
+        if any(kw in content for kw in urgent_kws):
+            return "Urgent"
+        if any(kw in content for kw in upcoming_kws):
+            return "Upcoming"
+        if any(kw in content for kw in later_kws):
+            return "Later"
+            
+        return "Later" # Default

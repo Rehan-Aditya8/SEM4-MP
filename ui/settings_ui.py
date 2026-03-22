@@ -68,6 +68,9 @@ class SettingsUI(ctk.CTkFrame):
 
         if success:
             self.refresh_status()
+            # Sync with dashboard if it's already created
+            if hasattr(self.master, 'dashboard_frame'):
+                self.master.dashboard_frame.update_focus_button_state()
         else:
             self.status_label.configure(
                 text="Error: Run app as Administrator",

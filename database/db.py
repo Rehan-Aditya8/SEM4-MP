@@ -17,6 +17,16 @@ def init_db():
         conn.commit()
         conn.close()
         print("Database initialized.")
+    
+    # Always run cleanup on startup
+    cleanup_old_logs()
+
+
+# ===== CLEANUP OLD LOGS =====
+def cleanup_old_logs():
+    query = "DELETE FROM logs WHERE timestamp < datetime('now', '-3 months')"
+    execute_query(query)
+    print("Old logs cleaned up.")
 
 
 # ===== EXECUTE QUERY =====

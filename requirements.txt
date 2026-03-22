@@ -3,3 +3,4 @@ matplotlib
 pywin32
 pandas
 psutil
+Pillow
